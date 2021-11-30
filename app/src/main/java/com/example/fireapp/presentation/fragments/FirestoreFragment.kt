@@ -1,4 +1,4 @@
-package com.example.fireapp.fragments
+package com.example.fireapp.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
