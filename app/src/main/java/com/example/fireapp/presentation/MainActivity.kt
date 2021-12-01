@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI(resultWrapper: ResultWrapper<List<Pokemon>>) {
         when (resultWrapper){
-            is ResultWrapper.Fail -> showMessage(resultWrapper.exception.toString())
+            is ResultWrapper.Failure -> showMessage(resultWrapper.throwable.message!!)
             is ResultWrapper.Success -> showMessage(resultWrapper.data.toString())
         }
     }
@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                     changeFragment(FirestoreFragment(), binding.root.fragmentContainerView.id)
                 }
             }
-            mainViewModel.getAllPokemon()
         }
 
         return super.onOptionsItemSelected(item)

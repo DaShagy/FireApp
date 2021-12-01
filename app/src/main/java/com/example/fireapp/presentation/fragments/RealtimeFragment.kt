@@ -22,26 +22,11 @@ class RealtimeFragment : Fragment() {
     private var _binding : FragmentRealtimeBinding? = null
     val binding get() = _binding!!
 
-    private val mainViewModel by viewModel<MainViewModel>()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentRealtimeBinding.inflate(layoutInflater)
-
-        binding.root.btnTestDatabase.setOnClickListener {
-            mainViewModel.insertPokemon(
-                Pokemon(
-                    1,
-                    "Shagy",
-                    3,
-                    183,
-                    85
-                )
-            )
-        }
-
         return binding.root
     }
 }

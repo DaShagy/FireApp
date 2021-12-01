@@ -4,9 +4,11 @@ import android.util.Log
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.domain.repositories.PokemonRepository
 import com.example.fireapp.util.ResultWrapper
-import com.example.fireapp.util.ResultWrapper.Success
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class FirestorePokemonRepository : PokemonRepository {
     override suspend fun insertPokemon(pokemon: Pokemon) {
@@ -14,7 +16,7 @@ class FirestorePokemonRepository : PokemonRepository {
             .collection("pokemon")
             .document(pokemon.id.toString())
             .set(pokemon)
-            .addOnSuccessListener { documentReference ->
+            .addOnSuccessListener {
                 Log.d("FirestoreRepository", "DocumentSnapshot written with ID: ${pokemon.id}")
             }
             .addOnFailureListener { e ->
@@ -22,29 +24,27 @@ class FirestorePokemonRepository : PokemonRepository {
             }
     }
 
-    override suspend fun getAllPokemon(): ResultWrapper<List<Pokemon>> {
-        val eventList = mutableListOf<Pokemon>()
-        val resultList = FirebaseFirestore.getInstance()
+    @ExperimentalCoroutinesApi
+    override suspend fun getAllPokemon(): Flow<ResultWrapper<List<Pokemon>>> = callbackFlow {
+        val pokemonCollection = FirebaseFirestore.getInstance()
             .collection("pokemon")
-            .get().await()
 
-        for (document in resultList) {
-            val name = document.getString("name")
-            val id = document.getLong("id")
-            val order = document.getLong("order")
-            val height = document.getLong("height")
-            val weight = document.getLong("weight")
-            eventList.add(
-                Pokemon(
-                    id?.toInt(),
-                    name,
-                    order?.toInt(),
-                    height?.toInt(),
-                    weight?.toInt(),
-                )
-            )
+        val subscription = pokemonCollection.addSnapshotListener { snapshot, e ->
+            if (e != null){
+                Log.w("Firestore", "Listen failed.", e)
+                trySend(ResultWrapper.Failure(e.cause!!))
+                return@addSnapshotListener
+            }
+
+            val pokemonList = mutableListOf<Pokemon>()
+            for (document in snapshot!!){
+                val pokemon = document.toObject(Pokemon::class.java)
+                pokemonList.add(pokemon)
+            }
+
+            trySend(ResultWrapper.Success(pokemonList as List<Pokemon>))
         }
 
-        return Success(eventList as List<Pokemon>)
+        awaitClose { subscription.remove() }
     }
 }

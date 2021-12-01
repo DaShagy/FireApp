@@ -1,31 +1,27 @@
 package com.example.fireapp.presentation.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.fireapp.data.repositories.FirestorePokemonRepository
+import androidx.lifecycle.*
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.domain.usecases.GetAllPokemonUseCase
 import com.example.fireapp.domain.usecases.InsertPokemonUseCase
 import com.example.fireapp.util.ResultWrapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainViewModel(
-    private val repository: FirestorePokemonRepository
+    val getAllPokemonUseCase : GetAllPokemonUseCase,
+    val insertPokemonUseCase : InsertPokemonUseCase
 ) : ViewModel() {
 
-    val getAllPokemonUseCase = GetAllPokemonUseCase(repository)
-    val insertPokemonUseCase = InsertPokemonUseCase(repository)
-
-    private var _pokemonList = MutableLiveData<ResultWrapper<List<Pokemon>>>()
-    val pokemonList: LiveData<ResultWrapper<List<Pokemon>>> get() = _pokemonList
-
-    fun getAllPokemon() = viewModelScope.launch {
-        withContext(Dispatchers.IO){
-            _pokemonList.postValue(getAllPokemonUseCase())
+    val pokemonList = liveData(Dispatchers.IO){
+        try {
+            getAllPokemonUseCase().collect {
+                emit(it)
+            }
+        } catch(e: Exception){
+            emit(ResultWrapper.Failure(e.cause?:Throwable("Unidentified exception")))
         }
     }
 

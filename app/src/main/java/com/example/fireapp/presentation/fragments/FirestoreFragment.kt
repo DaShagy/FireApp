@@ -6,18 +6,44 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.fireapp.databinding.FragmentFirestoreBinding
-import kotlinx.android.synthetic.main.fragment_firestore.view.*
+import com.example.fireapp.domain.entities.Pokemon
+import com.example.fireapp.presentation.PokemonListAdapter
+import com.example.fireapp.presentation.viewmodels.MainViewModel
+import com.example.fireapp.util.ResultWrapper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FirestoreFragment : Fragment() {
+
     private var _binding : FragmentFirestoreBinding? = null
     val binding get() = _binding!!
+
+    private val mainViewModel by viewModel<MainViewModel>()
+
+    private lateinit var pokemonListAdapter: PokemonListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentFirestoreBinding.inflate(layoutInflater)
-        binding.root.textViewFirestore.text = "Dans la capi comme Messi"
+
+        pokemonListAdapter = PokemonListAdapter()
+
+        val recyclerView = binding.recyclerviewFirestorePokemon
+        recyclerView.adapter = pokemonListAdapter
+
+        mainViewModel.pokemonList.observe(viewLifecycleOwner, ::updateUI)
+
         return binding.root
+    }
+
+    private fun updateUI(result: ResultWrapper<List<Pokemon>>){
+        when (result){
+            is ResultWrapper.Failure -> Unit
+            is ResultWrapper.Success ->{
+                pokemonListAdapter.updateDataset(result.data)
+                pokemonListAdapter.notifyDataSetChanged()
+            }
+        }
     }
 }
