@@ -5,9 +5,9 @@ import com.example.fireapp.domain.repositories.PokemonRepository
 import com.example.fireapp.util.ResultWrapper
 import kotlinx.coroutines.flow.Flow
 
-class GetAllPokemonUseCase(
-    private val repository: PokemonRepository
-) {
-    suspend operator fun invoke() : Flow<ResultWrapper<List<Pokemon>>> =
+abstract class BaseUseCases(private val repository: PokemonRepository) {
+    suspend fun getAllPokemonUseCase() : Flow<ResultWrapper<List<Pokemon>>> =
         repository.getAllPokemon()
+
+    suspend fun insertPokemonUseCase(pokemon: Pokemon) = repository.insertPokemon(pokemon)
 }

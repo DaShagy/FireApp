@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.example.fireapp.databinding.FragmentFirestoreBinding
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.presentation.PokemonListAdapter
-import com.example.fireapp.presentation.viewmodels.MainViewModel
+import com.example.fireapp.presentation.viewmodels.FirestoreViewModel
 import com.example.fireapp.util.ResultWrapper
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -17,7 +17,7 @@ class FirestoreFragment : Fragment() {
     private var _binding : FragmentFirestoreBinding? = null
     val binding get() = _binding!!
 
-    private val mainViewModel by viewModel<MainViewModel>()
+    private val firestoreViewModel by viewModel<FirestoreViewModel>()
 
     private lateinit var pokemonListAdapter: PokemonListAdapter
 
@@ -32,7 +32,7 @@ class FirestoreFragment : Fragment() {
         val recyclerView = binding.recyclerviewFirestorePokemon
         recyclerView.adapter = pokemonListAdapter
 
-        mainViewModel.pokemonList.observe(viewLifecycleOwner, ::updateUI)
+        firestoreViewModel.pokemonList.observe(viewLifecycleOwner, ::updateUI)
 
         return binding.root
     }

@@ -2,7 +2,7 @@ package com.example.fireapp.data.repositories
 
 import android.util.Log
 import com.example.fireapp.domain.entities.Pokemon
-import com.example.fireapp.domain.repositories.PokemonRepository
+import com.example.fireapp.domain.repositories.FirestorePokemonRepository
 import com.example.fireapp.util.ResultWrapper
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,18 +10,12 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class FirestorePokemonRepository : PokemonRepository {
+class FirestorePokemonRepositoryImpl : FirestorePokemonRepository {
     override suspend fun insertPokemon(pokemon: Pokemon) {
         FirebaseFirestore.getInstance()
             .collection("pokemon")
             .document(pokemon.id.toString())
             .set(pokemon)
-            .addOnSuccessListener {
-                Log.d("FirestoreRepository", "DocumentSnapshot written with ID: ${pokemon.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w("FirestoreRepository", "Error adding document", e)
-            }
     }
 
     @ExperimentalCoroutinesApi

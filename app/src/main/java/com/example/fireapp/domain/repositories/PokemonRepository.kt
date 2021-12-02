@@ -8,3 +8,6 @@ interface PokemonRepository {
     suspend fun insertPokemon(pokemon: Pokemon)
     suspend fun getAllPokemon(): Flow<ResultWrapper<List<Pokemon>>>
 }
+
+interface FirestorePokemonRepository : PokemonRepository
+interface RealtimePokemonRepository : PokemonRepository
