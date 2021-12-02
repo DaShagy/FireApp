@@ -40,9 +40,8 @@ class FirestoreFragment : Fragment() {
     private fun updateUI(result: ResultWrapper<List<Pokemon>>){
         when (result){
             is ResultWrapper.Failure -> Unit
-            is ResultWrapper.Success ->{
+            is ResultWrapper.Success -> {
                 pokemonListAdapter.updateDataset(result.data)
-                pokemonListAdapter.notifyDataSetChanged()
             }
         }
     }
