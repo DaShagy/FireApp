@@ -5,11 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.example.fireapp.databinding.FragmentFirestoreBinding
 import com.example.fireapp.domain.entities.Pokemon
+import com.example.fireapp.presentation.MainActivity
 import com.example.fireapp.presentation.PokemonListAdapter
 import com.example.fireapp.presentation.viewmodels.FirestoreViewModel
 import com.example.fireapp.util.ResultWrapper
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FirestoreFragment : Fragment() {
@@ -27,7 +31,13 @@ class FirestoreFragment : Fragment() {
     ): View {
         _binding = FragmentFirestoreBinding.inflate(layoutInflater)
 
-        pokemonListAdapter = PokemonListAdapter()
+        (activity as AppCompatActivity).supportActionBar?.let{
+            it.title = "Firestore"
+        }
+
+        pokemonListAdapter = PokemonListAdapter{ pokemon ->
+            onRecyclerViewItemClick(pokemon)
+        }
 
         val recyclerView = binding.recyclerviewFirestorePokemon
         recyclerView.adapter = pokemonListAdapter
@@ -44,5 +54,10 @@ class FirestoreFragment : Fragment() {
                 pokemonListAdapter.updateDataset(result.data)
             }
         }
+    }
+
+    private fun onRecyclerViewItemClick(pokemon: Pokemon){
+        (activity as MainActivity).updateCard(pokemon)
+        firestoreViewModel.setCardPokemon(pokemon)
     }
 }

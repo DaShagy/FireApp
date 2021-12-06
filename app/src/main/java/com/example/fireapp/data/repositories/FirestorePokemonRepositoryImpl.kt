@@ -41,4 +41,11 @@ class FirestorePokemonRepositoryImpl : FirestorePokemonRepository {
 
         awaitClose { subscription.remove() }
     }
+
+    override suspend fun deletePokemon(pokemon: Pokemon) {
+        FirebaseFirestore.getInstance()
+            .collection("pokemon")
+            .document(pokemon.id.toString())
+            .delete()
+    }
 }

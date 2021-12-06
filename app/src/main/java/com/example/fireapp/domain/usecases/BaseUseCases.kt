@@ -10,4 +10,6 @@ abstract class BaseUseCases(private val repository: PokemonRepository) {
         repository.getAllPokemon()
 
     suspend fun insertPokemonUseCase(pokemon: Pokemon) = repository.insertPokemon(pokemon)
+
+    suspend fun deletePokemonUseCase(pokemon: Pokemon) = repository.deletePokemon(pokemon)
 }

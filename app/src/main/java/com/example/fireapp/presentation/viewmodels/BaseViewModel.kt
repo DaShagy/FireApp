@@ -1,8 +1,6 @@
 package com.example.fireapp.presentation.viewmodels
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.domain.usecases.BaseUseCases
 import com.example.fireapp.util.ResultWrapper
@@ -12,9 +10,8 @@ import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(private val useCases: BaseUseCases) : ViewModel() {
 
-    fun insertPokemon(pokemon: Pokemon) = viewModelScope.launch(Dispatchers.IO) {
-        useCases.insertPokemonUseCase(pokemon)
-    }
+    private var _cardPokemon: MutableLiveData<Pokemon> = MutableLiveData()
+    val cardPokemon: LiveData<Pokemon> get() = _cardPokemon
 
     val pokemonList = liveData(Dispatchers.IO){
         try {
@@ -25,4 +22,17 @@ abstract class BaseViewModel(private val useCases: BaseUseCases) : ViewModel() {
             emit(ResultWrapper.Failure(e.cause?:Throwable("Unidentified exception")))
         }
     }
+
+    fun setCardPokemon(pokemon: Pokemon){
+        _cardPokemon.value = pokemon
+    }
+
+    fun insertPokemon(pokemon: Pokemon) = viewModelScope.launch(Dispatchers.IO) {
+        useCases.insertPokemonUseCase(pokemon)
+    }
+
+    fun deletePokemon(pokemon: Pokemon) = viewModelScope.launch(Dispatchers.IO) {
+        useCases.deletePokemonUseCase(pokemon)
+    }
+
 }

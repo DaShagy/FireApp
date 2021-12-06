@@ -5,11 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.example.fireapp.databinding.FragmentRealtimeBinding
 import com.example.fireapp.domain.entities.Pokemon
+import com.example.fireapp.presentation.MainActivity
 import com.example.fireapp.presentation.PokemonListAdapter
 import com.example.fireapp.presentation.viewmodels.RealtimeViewModel
 import com.example.fireapp.util.ResultWrapper
+import kotlinx.android.synthetic.main.activity_main.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RealtimeFragment : Fragment() {
@@ -26,7 +29,13 @@ class RealtimeFragment : Fragment() {
     ): View {
         _binding = FragmentRealtimeBinding.inflate(layoutInflater)
 
-        pokemonListAdapter = PokemonListAdapter()
+        (activity as AppCompatActivity).supportActionBar?.let{
+            it.title = "Firebase Realtime"
+        }
+
+        pokemonListAdapter = PokemonListAdapter{ pokemon ->
+            onRecyclerViewItemClick(pokemon)
+        }
 
         val recyclerView = binding.recyclerviewRealtimePokemon
         recyclerView.adapter = pokemonListAdapter
@@ -43,5 +52,10 @@ class RealtimeFragment : Fragment() {
                 pokemonListAdapter.updateDataset(result.data)
             }
         }
+    }
+
+    private fun onRecyclerViewItemClick(pokemon: Pokemon){
+        (activity as MainActivity).updateCard(pokemon)
+        realtimeViewModel.setCardPokemon(pokemon)
     }
 }

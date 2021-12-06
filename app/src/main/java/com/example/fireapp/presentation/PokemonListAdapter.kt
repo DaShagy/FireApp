@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fireapp.databinding.RecyclerviewPokemonlistBinding
 import com.example.fireapp.domain.entities.Pokemon
 
-class PokemonListAdapter() : RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>(){
+class PokemonListAdapter(
+    private val listener: (Pokemon) -> Unit
+) : RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>(){
 
     private class DiffCallback(
         val oldList: List<Pokemon>,
@@ -28,8 +30,16 @@ class PokemonListAdapter() : RecyclerView.Adapter<PokemonListAdapter.PokemonView
     }
 
 
-    class PokemonViewHolder(val binding: RecyclerviewPokemonlistBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    class PokemonViewHolder(
+        val binding: RecyclerviewPokemonlistBinding,
+        val itemListener: (Int) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root){
+        init {
+            binding.root.setOnClickListener {
+                itemListener(adapterPosition)
+            }
+        }
+    }
 
     private var dataset: List<Pokemon> = listOf()
 
@@ -47,7 +57,9 @@ class PokemonListAdapter() : RecyclerView.Adapter<PokemonListAdapter.PokemonView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         val binding = RecyclerviewPokemonlistBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PokemonViewHolder(binding)
+        return PokemonViewHolder(binding){
+            listener(dataset[it])
+        }
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {

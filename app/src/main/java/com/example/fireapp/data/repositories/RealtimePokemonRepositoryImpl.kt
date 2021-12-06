@@ -46,4 +46,9 @@ class RealtimePokemonRepositoryImpl : RealtimePokemonRepository {
             ref.removeEventListener(valueEventListener)
         }
     }
+
+    override suspend fun deletePokemon(pokemon: Pokemon) {
+        val database = Firebase.database.reference
+        database.child("pokemon").child(pokemon.id.toString()).removeValue()
+    }
 }

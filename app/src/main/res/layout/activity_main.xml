@@ -6,16 +6,114 @@
     android:layout_height="match_parent"
     tools:context=".presentation.MainActivity">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/pokemonCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/cardPokemonName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Name: Pokemon"
+                app:layout_constraintEnd_toStartOf="@+id/cardPokemonOrder"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/cardPokemonOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Order #12"
+                app:layout_constraintBottom_toBottomOf="@+id/cardPokemonName"
+                app:layout_constraintEnd_toStartOf="@+id/cardPokemonHeight"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cardPokemonName"
+                app:layout_constraintTop_toTopOf="@+id/cardPokemonName" />
+
+            <TextView
+                android:id="@+id/cardPokemonHeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="183 cm"
+                app:layout_constraintBottom_toBottomOf="@+id/cardPokemonOrder"
+                app:layout_constraintEnd_toStartOf="@+id/cardPokemonWeight"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cardPokemonOrder"
+                app:layout_constraintTop_toTopOf="@+id/cardPokemonOrder" />
+
+            <TextView
+                android:id="@+id/cardPokemonWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="85 kg"
+                app:layout_constraintBottom_toBottomOf="@+id/cardPokemonHeight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardPokemonHeight"
+                app:layout_constraintTop_toTopOf="@+id/cardPokemonHeight" />
+
+            <Button
+                android:id="@+id/cardBtnEditPokemon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Edit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cardBtnDeletePokemon"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardPokemonName" />
+
+            <Button
+                android:id="@+id/cardBtnDeletePokemon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Delete"
+                app:layout_constraintBottom_toBottomOf="@+id/cardBtnEditPokemon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cardBtnEditPokemon"
+                app:layout_constraintTop_toTopOf="@+id/cardBtnEditPokemon" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="com.example.fireapp.presentation.fragments.RealtimeFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/pokemonCard"
+        app:layout_constraintVertical_bias="0.0" />
 
     <View
         android:id="@+id/divider"

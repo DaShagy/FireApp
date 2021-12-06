@@ -1,11 +1,9 @@
 package com.example.fireapp.presentation
 
-import android.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.fireapp.R
@@ -15,7 +13,7 @@ import com.example.fireapp.presentation.fragments.FirestoreFragment
 import com.example.fireapp.presentation.fragments.RealtimeFragment
 import com.example.fireapp.presentation.viewmodels.FirestoreViewModel
 import com.example.fireapp.presentation.viewmodels.RealtimeViewModel
-import com.example.fireapp.util.ResultWrapper
+import com.example.fireapp.util.Const
 import kotlinx.android.synthetic.main.activity_main.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private val firestoreViewModel by viewModel<FirestoreViewModel>()
     private val realtimeViewModel by viewModel<RealtimeViewModel>()
+    private var cardPokemon : Pokemon? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,28 +35,17 @@ class MainActivity : AppCompatActivity() {
             changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
         }
 
-        val pokemonNameEditText = binding.editTextPokemonName
-        val pokemonIdEditText = binding.editTextPokemonId
-        val pokemonOrderEditText = binding.editTextPokemonOrder
-        val pokemonHeightEditText = binding.editTextPokemonHeight
-        val pokemonWeightEditText = binding.editTextPokemonWeight
+        binding.btnAddPokemon.setOnClickListener {
+            onAddPokemonButtonClick()
+        }
 
-        val addPokemonBtn = binding.btnAddPokemon
-        addPokemonBtn.setOnClickListener {
-            val pokemon = Pokemon(
-                id = pokemonIdEditText.text.toString().toIntOrNull(),
-                name = pokemonNameEditText.text.toString(),
-                order = pokemonOrderEditText.text.toString().toIntOrNull(),
-                height = pokemonHeightEditText.text.toString().toIntOrNull(),
-                weight = pokemonWeightEditText.text.toString().toIntOrNull()
-            )
-            addPokemon(pokemon).also {
-                pokemonNameEditText.text.clear()
-                pokemonIdEditText.text.clear()
-                pokemonOrderEditText.text.clear()
-                pokemonHeightEditText.text.clear()
-                pokemonWeightEditText.text.clear()
-            }
+        binding.root.cardBtnEditPokemon.setOnClickListener {
+            cardPokemon?.let { pokemon -> onCardEditButtonClick(pokemon) }
+        }
+
+        binding.root.cardBtnDeletePokemon.setOnClickListener {
+            cardPokemon?.let { pokemon -> onCardDeleteButtonClick(pokemon) }
+            clearEditTextFields()
         }
 
         setContentView(binding.root)
@@ -92,6 +80,8 @@ class MainActivity : AppCompatActivity() {
             addToBackStack(null)
             commit()
         }
+        clearEditTextFields()
+        updateCard(null)
     }
 
     fun showMessage(message: String) {
@@ -115,5 +105,73 @@ class MainActivity : AppCompatActivity() {
                 realtimeViewModel.insertPokemon(pokemon)
             }
         }
+    }
+
+    fun updateCard(pokemon: Pokemon?){
+        binding.root.cardPokemonName.text = "Name: ${pokemon?.name ?: "Pokemon"}"
+        binding.root.cardPokemonOrder.text = "Order #${pokemon?.order ?: "##"}"
+        binding.root.cardPokemonHeight.text = "${pokemon?.height ?: "###"}cm."
+        binding.root.cardPokemonWeight.text = "${pokemon?.weight ?: "###"}kg."
+        cardPokemon = pokemon
+    }
+
+    private fun clearEditTextFields(){
+        binding.root.editTextPokemonName.text.clear()
+        binding.root.editTextPokemonId.text.clear()
+        binding.root.editTextPokemonOrder.text.clear()
+        binding.root.editTextPokemonHeight.text.clear()
+        binding.root.editTextPokemonWeight.text.clear()
+    }
+
+    private fun onAddPokemonButtonClick(){
+        if (
+            binding.editTextPokemonId.text.toString().isNotBlank()
+            and binding.editTextPokemonName.text.toString().isNotBlank()
+            and binding.editTextPokemonOrder.text.toString().isNotBlank()
+            and binding.editTextPokemonHeight.text.toString().isNotBlank()
+            and binding.editTextPokemonWeight.text.toString().isNotBlank()
+        ) {
+            val pokemon = Pokemon(
+                id = binding.editTextPokemonId.text.toString().toIntOrNull(),
+                name = binding.editTextPokemonName.text.toString(),
+                order = binding.editTextPokemonOrder.text.toString().toIntOrNull(),
+                height = binding.editTextPokemonHeight.text.toString().toIntOrNull(),
+                weight = binding.editTextPokemonWeight.text.toString().toIntOrNull()
+            )
+            addPokemon(pokemon).also {
+                clearEditTextFields()
+
+                if (binding.root.btnAddPokemon.text == Const.EDIT_POKEMON) {
+                    binding.root.btnAddPokemon.text = Const.ADD_POKEMON
+                    binding.editTextPokemonId.isEnabled = true
+                }
+            }
+        }
+    }
+
+    private fun onCardEditButtonClick(pokemon: Pokemon){
+
+        binding.editTextPokemonName.setText(pokemon.name)
+        binding.editTextPokemonId.apply {
+            setText(pokemon.id.toString())
+            isEnabled = false
+        }
+        binding.editTextPokemonOrder.setText(pokemon.order.toString())
+        binding.editTextPokemonHeight.setText(pokemon.height.toString())
+        binding.editTextPokemonWeight.setText(pokemon.weight.toString())
+
+        binding.btnAddPokemon.text = Const.EDIT_POKEMON
+    }
+
+    private fun onCardDeleteButtonClick(pokemon: Pokemon){
+        when (supportFragmentManager.fragments[0]){
+            is FirestoreFragment -> {
+                firestoreViewModel.deletePokemon(pokemon)
+            }
+            is RealtimeFragment -> {
+                realtimeViewModel.deletePokemon(pokemon)
+            }
+        }
+        updateCard(Pokemon())
     }
 }

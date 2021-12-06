@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface PokemonRepository {
     suspend fun insertPokemon(pokemon: Pokemon)
     suspend fun getAllPokemon(): Flow<ResultWrapper<List<Pokemon>>>
+    suspend fun deletePokemon(pokemon: Pokemon)
 }
 
 interface FirestorePokemonRepository : PokemonRepository
