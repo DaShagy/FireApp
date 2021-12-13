@@ -13,7 +13,7 @@ abstract class BaseViewModel(private val useCases: BaseUseCases) : ViewModel() {
     private var _cardPokemon: MutableLiveData<Pokemon> = MutableLiveData()
     val cardPokemon: LiveData<Pokemon> get() = _cardPokemon
 
-    val pokemonList = liveData(Dispatchers.IO){
+   val pokemonList = liveData(Dispatchers.IO){
         try {
             useCases.getAllPokemonUseCase().collect {
                 emit(it)

@@ -12,3 +12,5 @@ interface PokemonRepository {
 
 interface FirestorePokemonRepository : PokemonRepository
 interface RealtimePokemonRepository : PokemonRepository
+interface RoomPokemonRepository : PokemonRepository
+interface RealmPokemonRepository : PokemonRepository

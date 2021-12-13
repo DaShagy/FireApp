@@ -10,9 +10,13 @@ import com.example.fireapp.R
 import com.example.fireapp.databinding.ActivityMainBinding
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.presentation.fragments.FirestoreFragment
+import com.example.fireapp.presentation.fragments.RealmFragment
 import com.example.fireapp.presentation.fragments.RealtimeFragment
+import com.example.fireapp.presentation.fragments.RoomFragment
 import com.example.fireapp.presentation.viewmodels.FirestoreViewModel
+import com.example.fireapp.presentation.viewmodels.RealmViewModel
 import com.example.fireapp.presentation.viewmodels.RealtimeViewModel
+import com.example.fireapp.presentation.viewmodels.RoomViewModel
 import com.example.fireapp.util.Const
 import kotlinx.android.synthetic.main.activity_main.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private val firestoreViewModel by viewModel<FirestoreViewModel>()
     private val realtimeViewModel by viewModel<RealtimeViewModel>()
+    private val roomViewModel by viewModel<RoomViewModel>()
+    private val realmViewModel by viewModel<RealmViewModel>()
     private var cardPokemon : Pokemon? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null){
             changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
         }
+
+
 
         binding.btnAddPokemon.setOnClickListener {
             onAddPokemonButtonClick()
@@ -65,6 +73,14 @@ class MainActivity : AppCompatActivity() {
                     changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
                 }
                 is RealtimeFragment -> {
+                    supportFragmentManager.popBackStack()
+                    changeFragment(RoomFragment(), binding.root.fragmentContainerView.id)
+                }
+                is RoomFragment -> {
+                    supportFragmentManager.popBackStack()
+                    changeFragment(RealmFragment(), binding.root.fragmentContainerView.id)
+                }
+                is RealmFragment -> {
                     supportFragmentManager.popBackStack()
                     changeFragment(FirestoreFragment(), binding.root.fragmentContainerView.id)
                 }
@@ -104,14 +120,20 @@ class MainActivity : AppCompatActivity() {
             is RealtimeFragment -> {
                 realtimeViewModel.insertPokemon(pokemon)
             }
+            is RoomFragment -> {
+                roomViewModel.insertPokemon(pokemon)
+            }
+            is RealmFragment -> {
+                realmViewModel.insertPokemon(pokemon)
+            }
         }
     }
 
     fun updateCard(pokemon: Pokemon?){
-        binding.root.cardPokemonName.text = "Name: ${pokemon?.name ?: "Pokemon"}"
+        binding.root.cardPokemonName.text = "Name: ${pokemon?.name ?: ""}"
         binding.root.cardPokemonOrder.text = "Order #${pokemon?.order ?: "##"}"
-        binding.root.cardPokemonHeight.text = "${pokemon?.height ?: "###"}cm."
-        binding.root.cardPokemonWeight.text = "${pokemon?.weight ?: "###"}kg."
+        binding.root.cardPokemonHeight.text = "${pokemon?.height ?: ""}cm."
+        binding.root.cardPokemonWeight.text = "${pokemon?.weight ?: ""}kg."
         cardPokemon = pokemon
     }
 
@@ -145,6 +167,8 @@ class MainActivity : AppCompatActivity() {
                     binding.root.btnAddPokemon.text = Const.ADD_POKEMON
                     binding.editTextPokemonId.isEnabled = true
                 }
+
+                updateCard(Pokemon())
             }
         }
     }
@@ -170,6 +194,12 @@ class MainActivity : AppCompatActivity() {
             }
             is RealtimeFragment -> {
                 realtimeViewModel.deletePokemon(pokemon)
+            }
+            is RoomFragment -> {
+                roomViewModel.deletePokemon(pokemon)
+            }
+            is RealmFragment -> {
+                realmViewModel.deletePokemon(pokemon)
             }
         }
         updateCard(Pokemon())

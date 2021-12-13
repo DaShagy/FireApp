@@ -32,11 +32,11 @@ class RealtimePokemonRepositoryImpl : RealtimePokemonRepository {
                     val pokemon = pokemonSnapshot.getValue<Pokemon>()
                     pokemonList.add(pokemon!!)
                 }
-                trySendBlocking(ResultWrapper.Success(pokemonList))
+                trySend(ResultWrapper.Success(pokemonList))
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                trySendBlocking(ResultWrapper.Failure(databaseError.toException()))
+                trySend(ResultWrapper.Failure(databaseError.toException()))
             }
         }
 
