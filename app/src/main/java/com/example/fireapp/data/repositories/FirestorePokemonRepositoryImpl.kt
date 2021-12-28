@@ -2,15 +2,17 @@ package com.example.fireapp.data.repositories
 
 import android.util.Log
 import com.example.fireapp.domain.entities.Pokemon
-import com.example.fireapp.domain.repositories.FirestorePokemonRepository
+import com.example.fireapp.domain.repositories.PokemonRepository
 import com.example.fireapp.util.ResultWrapper
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import javax.inject.Inject
 
-class FirestorePokemonRepositoryImpl : FirestorePokemonRepository {
+
+class FirestorePokemonRepositoryImpl @Inject constructor() : PokemonRepository {
     override suspend fun insertPokemon(pokemon: Pokemon) {
         FirebaseFirestore.getInstance()
             .collection("pokemon")

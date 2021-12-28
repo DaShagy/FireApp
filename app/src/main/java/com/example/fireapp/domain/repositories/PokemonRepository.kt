@@ -9,8 +9,3 @@ interface PokemonRepository {
     suspend fun getAllPokemon(): Flow<ResultWrapper<List<Pokemon>>>
     suspend fun deletePokemon(pokemon: Pokemon)
 }
-
-interface FirestorePokemonRepository : PokemonRepository
-interface RealtimePokemonRepository : PokemonRepository
-interface RoomPokemonRepository : PokemonRepository
-interface RealmPokemonRepository : PokemonRepository

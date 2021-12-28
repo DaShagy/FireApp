@@ -1,35 +1,40 @@
 package com.example.fireapp.presentation
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import com.example.fireapp.R
 import com.example.fireapp.databinding.ActivityMainBinding
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.presentation.fragments.FirestoreFragment
-import com.example.fireapp.presentation.fragments.RealmFragment
 import com.example.fireapp.presentation.fragments.RealtimeFragment
-import com.example.fireapp.presentation.fragments.RoomFragment
 import com.example.fireapp.presentation.viewmodels.FirestoreViewModel
-import com.example.fireapp.presentation.viewmodels.RealmViewModel
 import com.example.fireapp.presentation.viewmodels.RealtimeViewModel
-import com.example.fireapp.presentation.viewmodels.RoomViewModel
 import com.example.fireapp.util.Const
+import com.example.fireapp.util.ResultWrapper
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.view.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
     val binding get() = _binding!!
 
-    private val firestoreViewModel by viewModel<FirestoreViewModel>()
-    private val realtimeViewModel by viewModel<RealtimeViewModel>()
-    private val roomViewModel by viewModel<RoomViewModel>()
-    private val realmViewModel by viewModel<RealmViewModel>()
+    private val firestoreViewModel by viewModels<FirestoreViewModel>()
+    private val realtimeViewModel by viewModels<RealtimeViewModel>()
     private var cardPokemon : Pokemon? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,11 +42,20 @@ class MainActivity : AppCompatActivity() {
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
 
-        if (savedInstanceState == null){
-            changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
+        createNotificationChannel()
+
+        firestoreViewModel.pokemonList.observe(this){
+            showNotification("Database", "Database has been updated", NOTIFICATION_ID)
+        }
+
+        realtimeViewModel.pokemonList.observe(this){
+            showNotification("Database", "Database has been updated", NOTIFICATION_ID)
         }
 
 
+        if (savedInstanceState == null){
+            changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
+        }
 
         binding.btnAddPokemon.setOnClickListener {
             onAddPokemonButtonClick()
@@ -73,14 +87,6 @@ class MainActivity : AppCompatActivity() {
                     changeFragment(RealtimeFragment(), binding.root.fragmentContainerView.id)
                 }
                 is RealtimeFragment -> {
-                    supportFragmentManager.popBackStack()
-                    changeFragment(RoomFragment(), binding.root.fragmentContainerView.id)
-                }
-                is RoomFragment -> {
-                    supportFragmentManager.popBackStack()
-                    changeFragment(RealmFragment(), binding.root.fragmentContainerView.id)
-                }
-                is RealmFragment -> {
                     supportFragmentManager.popBackStack()
                     changeFragment(FirestoreFragment(), binding.root.fragmentContainerView.id)
                 }
@@ -119,12 +125,6 @@ class MainActivity : AppCompatActivity() {
             }
             is RealtimeFragment -> {
                 realtimeViewModel.insertPokemon(pokemon)
-            }
-            is RoomFragment -> {
-                roomViewModel.insertPokemon(pokemon)
-            }
-            is RealmFragment -> {
-                realmViewModel.insertPokemon(pokemon)
             }
         }
     }
@@ -195,13 +195,41 @@ class MainActivity : AppCompatActivity() {
             is RealtimeFragment -> {
                 realtimeViewModel.deletePokemon(pokemon)
             }
-            is RoomFragment -> {
-                roomViewModel.deletePokemon(pokemon)
-            }
-            is RealmFragment -> {
-                realmViewModel.deletePokemon(pokemon)
-            }
         }
         updateCard(Pokemon())
+    }
+
+    private fun createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                lightColor = Color.RED
+                enableLights(true)
+            }
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    fun showNotification(title: String, text: String, notificationId: Int){
+        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_android_black_24dp)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        val notificationManager = NotificationManagerCompat.from(this)
+
+        notificationManager.notify(notificationId, notification)
+    }
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "channelId"
+        const val NOTIFICATION_CHANNEL_NAME = "channelName"
+        const val NOTIFICATION_ID = 0
     }
 }

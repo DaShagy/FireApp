@@ -4,8 +4,11 @@ import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.domain.repositories.PokemonRepository
 import com.example.fireapp.util.ResultWrapper
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-abstract class BaseUseCases(private val repository: PokemonRepository) {
+class UseCases(private val repository: PokemonRepository) {
+
     suspend fun getAllPokemonUseCase() : Flow<ResultWrapper<List<Pokemon>>> =
         repository.getAllPokemon()
 

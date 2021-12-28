@@ -6,20 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import com.example.fireapp.databinding.FragmentRealtimeBinding
 import com.example.fireapp.domain.entities.Pokemon
 import com.example.fireapp.presentation.MainActivity
 import com.example.fireapp.presentation.PokemonListAdapter
 import com.example.fireapp.presentation.viewmodels.RealtimeViewModel
 import com.example.fireapp.util.ResultWrapper
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.view.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class RealtimeFragment : Fragment() {
+
     private var _binding : FragmentRealtimeBinding? = null
     val binding get() = _binding!!
 
-    private val realtimeViewModel by viewModel<RealtimeViewModel>()
+    private val realtimeViewModel by viewModels<RealtimeViewModel>()
 
     private lateinit var pokemonListAdapter: PokemonListAdapter
 
